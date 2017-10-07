@@ -52,11 +52,45 @@
 	<input type="file" id="file" name="file" style="display: none;" />
 
 	<script>
+		let currentSong;
+		let songs = [
+			'musics/epicSaxGuy.mp3',
+			'musics/macintoshPlus.mp3',
+			'musics/piaoCasaPropria.mp3',
+			'musics/rufarTambores.mp3',
+			'musics/telesena.mp3',
+			'musics/thePriceIsRight.mp3',
+			'musics/topGear.mp3'
+		]
+		
 		var count = 0,
 			loop = 0,
 			list = document.getElementById('list'),
 			countNames,
 			random = 0;
+
+		var play = function() {
+			randomizeSong();
+			currentSong.play();
+			countNames = list.getElementsByTagName('li').length,
+			list.className = 'selecting';
+			count = 0,
+			loop = 0,
+			random = Math.floor(Math.random() * countNames);
+			sort();
+		};
+
+		var randomizeSong = function() {
+			randomNumber = Math.floor(Math.random() * (songs.length));
+			currentSong = new Audio(songs[randomNumber])
+		}
+
+		var musicFadeOut = function () {
+			if (currentSong.volume > 0.1) {
+				currentSong.volume = currentSong.volume - 0.1;
+				setTimeout(musicFadeOut,30)
+			}
+		}
 
 		var sort = function() {
 			if (count >= 0) {
@@ -65,26 +99,23 @@
 
 			count++;
 
+			//executa so no final
 			if ( count > 0 && count == countNames) {
 				loop++;
 				count = 0;
 			}
 
+			//executa so no final
 			if (loop >= 1) {
 				var el = list.style.top = -(random * 240) + 'px';
+				// currentSong.pause();
+				//currentSong.animate({volume: 0.0}, 1000);
+				//currentSong.volume = 0.1;
+				musicFadeOut()
 			} else {
 				setTimeout(sort, 20);
 			}
 		}
-
-		var play = function() {
-			countNames = list.getElementsByTagName('li').length,
-			list.className = 'selecting';
-			count = 0,
-			loop = 0,
-			random = Math.floor(Math.random() * countNames);
-			sort();
-		};
 
 		// window.open('./random-control.html', 'Sorteio de Nomes', 'menubar=1, resizable=1, width=150, height=150');
 
