@@ -1,96 +1,188 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Bootstrap 3.3.4 Example - jQuery.countdown</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <script src="http://cdn.rawgit.com/hilios/jQuery.countdown/2.1.0/dist/jquery.countdown.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-  <style type="text/css">
-    body { background: #000;}
-    .starter-template {
-      padding: 40px 15px;
-      text-align: center;
-    }
-    .panel {
-      margin-left: auto;
-      margin-right: auto;
-      border: none;
-      box-shadow: none;
-      background: transparent;
-    }
-    #btn-reset {
-      margin-right: 10px;
-    }
-    #clock {
-      margin-bottom: 0;
-    }
-    .lead {
-      font-size: 400px;
-      color: #fff;
-    }
-  </style>
+	<meta charset="UTF-8">
+	<title>Random</title>
+	<!--
+	 Original by Thiago Esser (@thiagoesser) & Alexander Chu (@webchu) for UXConfBR (http://www.uxconf.com.br)
+	 View project on GitHub: https://github.com/thiagoesser/uxconf
+	 (CC BY) 2016
+	 -->
+	
+	<!-- <link rel="stylesheet" href="/css/random.css"> -->
+	<style>
+		@import url('./css/random.min.css');
+		
+		body .wrapper:before, body .wrapper:after {
+			box-shadow: none;
+		}
+		body .wrapper {
+			border: none;
+		}
+	</style>
+	<script src="./js/jquery.min.js"></script>
 </head>
 <body>
 
-<div class="container">
-  <div class="starter-template">
-    <div class="panel panel-default" data-toggle="tooltip" data-placement="top" title="Beautifull, insn't it?">
-      <div class="panel-body">
-        <div class="lead" id="clock"></div>
-      </div>
-    </div>
+	<div class="wrapper">
+		<!-- lista de nomes -->
+		<ul id="list">
+			<li>Nome 1</li>
+			<li>Nome 2</li>
+		</ul>
+	</div>
 
-    <button type="button" class="btn btn-primary" id="btn-reset">
-      <i class="glyphicon glyphicon-repeat"></i>
-      Reset countdown
-    </button>
+	<div class="actions">
+		<button id="play" class="play" onclick="javascript:play();"><img src="play.svg" style="
+	      width: 80px;"></button>
+	</div>
 
-    <div class="btn-group" data-toggle="buttons">
-      <label class="btn btn-text" id="btn-pause">
-        <input type="radio" name="options" id="option2" autocomplete="off">
-        <i class="glyphicon glyphicon-pause"></i>
-        Pause
-      </label>
+	<img src="./images/logo-branco-isa.svg" style="
+	    width: 300px;
+	    display: block;
+	    position: fixed;
+	    left: 5%;
+	    bottom: 5%;
+	">
 
-      <label class="btn btn-default active" id="btn-resume">
-        <input type="radio" name="options" id="option2" autocomplete="off" checked>
-        <i class="glyphicon glyphicon-play"></i>
-        Resume
-      </label>
-    </div>
-  </div>
-</div>
-<script type="text/javascript">
-  // 15 days from now!
+	<img src="./images/mane.svg" style="
+	    display: block;
+	    position: fixed;
+	    right: -110px;
+	    bottom: -40px;
+	    height: 550px;
+	">
 
-  function get15dayFromNow() {
-    return new Date(new Date().valueOf() + 1200 * 1000);
-  }
+	<img src="./images/parabens.svg" id="congratulations">
 
-  var $clock = $('#clock');
+	<input type="file" id="file" name="file" style="display: none;" />
 
-  $clock.countdown(get15dayFromNow(), function(event) {
-    $(this).html(event.strftime('%M:%S'));
+	<script>
+		let currentSong;
+		let songs = [
+			'musics/epicSaxGuy.mp3',
+			'musics/macintoshPlus.mp3',
+			'musics/piaoCasaPropria.mp3',
+			'musics/rufarTambores.mp3',
+			'musics/telesena.mp3',
+			'musics/thePriceIsRight.mp3',
+			'musics/topGear.mp3',
+			'musics/neverGonnaGiveYouUp.mp3'
+		]
+		
+		var count = 0,
+			loop = 0,
+			list = document.getElementById('list'),
+			countNames,
+			random = 0;
 
-  });
+		var play = function() {
+			disableButton();
+			congratulationsFadeOut();
+			randomizeSong();
+			currentSong.play();
+			countNames = list.getElementsByTagName('li').length,
+			list.className = 'selecting';
+			count = 0,
+			loop = 0,
+			random = Math.floor(Math.random() * countNames);
+			sort();
+		};
 
-  $('#btn-reset').click(function() {
-    $clock.countdown(get15dayFromNow());
-  });
+		var randomizeSong = function() {
+			randomNumber = Math.floor(Math.random() * (songs.length));
+			currentSong = new Audio(songs[randomNumber])
+		}
 
-  $('#btn-pause').click(function() {
-    $clock.countdown('pause');
-  });
+		var musicFadeOut = function () {
+			if (currentSong.volume > 0.1) {
+				currentSong.volume = currentSong.volume - 0.1;
+				setTimeout(musicFadeOut,20)
+			}
+		}
 
-  $('#btn-resume').click(function() {
-    $clock.countdown('resume');
-  });
+		var congratulationsFadeIn = function() {
+			$('#congratulations').addClass('fadeIn');
+		}
 
-</script>
+		var congratulationsFadeOut = function() {
+			$('#congratulations').removeClass('fadeIn');
+		}
+
+		var disableButton = function() {
+    		$("#play").prop("disabled",true);
+		}
+
+		var enableButton = function() {
+    		$("#play").prop("disabled",false);
+		}
+
+		var sort = function() {
+			//console.log(count)
+			if (count >= 0) {
+				var el = list.style.top = -(count * 240) + 'px';
+			//console.log("entrei1")
+			}
+
+			count++;
+
+			//executa so no final
+			if ( count > 0 && count >= countNames) {
+				//console.log("entrei2")
+				loop++;
+				count = 0;
+			}
+
+			//executa so no final
+			if (loop >= 1) {
+				//console.log("entrei3")
+				var el = list.style.top = -(random * 240) + 'px';
+				musicFadeOut();
+				congratulationsFadeIn();
+				enableButton();
+			} else {
+				//console.log("entrei4")
+				setTimeout(sort, 20);
+			}
+		}
+
+		// window.open('./random-control.html', 'Sorteio de Nomes', 'menubar=1, resizable=1, width=150, height=150');
+
+		function handleFileSelect(evt) {
+		    var file = evt.target.files;
+
+			var reader = new FileReader();
+
+			reader.onload = (function(theFile) {
+				return function(e) {
+					var names = e.target.result.split('\n');
+					var html = '';
+					for (var i in names) {
+						if (names[i].charAt(0) == '#') {
+							html += '<li class="none"><span>' + names[i].substr(1) + '</span></li>';
+						} else {
+							html += '<li><span>' + names[i] + '</span></li>';
+						}
+					}
+					var el = document.getElementById('list');
+					el.innerHTML = html;
+				};
+			})(file[0]);
+	      	reader.readAsText(file[0]);
+		}
+		document.getElementById('file').addEventListener('change', handleFileSelect, false);
+	</script>
+
+	<script>
+		$(function() {
+			$(document).on("keydown", function(e){ 
+			    e = e || window.event;
+			    var charCode = e.which || e.keyCode;
+			    if(charCode == 70) {
+					$('#file').trigger('click')
+			    }
+			});
+		});
+	</script>
 </body>
 </html>

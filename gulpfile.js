@@ -18,13 +18,13 @@ gulp.task('connect', function() {
     );
 });
 
-/*gulp.task('browser-sync', function() {
+gulp.task('browser-sync', function() {
     browserSync.init({
         server: {
             baseDir: "./"
         }
     });
-});*/
+});
 
 gulp.task('html', function() {
     gulp.src(['*.html', '*.php'])
@@ -36,33 +36,32 @@ gulp.task('sass', function() {
         .src('./src/scss/**/*.scss')
         .pipe( connect.reload() )
         .pipe(plumber())
-        //.pipe(sourcemaps.init())
+        .pipe(sourcemaps.init())
             .pipe(sass(
                 { 
                     errLogToConsole: true,
-                    //sourceComments:true 
+                    sourceComments:true 
                 }
             ))
-            //.pipe(rename({suffix: '.min'}))
+            .pipe(rename({suffix: '.min'}))
             .pipe(minifycss())
-        //.pipe(sourcemaps.write('./maps'))
+        .pipe(sourcemaps.write('./maps'))
 
 
-        //.pipe( gulp.dest('./css') )
         .pipe( gulp.dest('./css') )
-        //.pipe(browserSync.stream())
+        .pipe(browserSync.stream())
 
-        /*.pipe(notify(function(file) {
+        .pipe(notify(function(file) {
             return 'Arquivo atualizado com sucesso!';
-        }))*/
-        /*.pipe(through(function () {
+        }))
+        .pipe(through(function () {
             this.emit("error", new Error("Something happend: Error message!"))
-        }))*/
+        }))
 
-        //.pipe(gulp.dest('./css/min'))
+        .pipe(gulp.dest('./css/min'))
 
-        //.pipe(concatCss('bundle.css'))
-        //.pipe(gulp.dest('./css'))
+        .pipe(concatCss('bundle.css'))
+        .pipe(gulp.dest('./css'))
         .pipe(livereload());
 });
 
@@ -75,11 +74,11 @@ gulp.task('js', function() {
 });
 
 gulp.task('watch', function() {
-   /* browserSync.init({
+    browserSync.init({
         server: {
             baseDir: "."
         }
-    });*/
+    });
     gulp.watch('./src/scss/**/*.scss', ['sass']);
     gulp.watch(['*.html', '*.php'], ['html']);
 });
@@ -87,4 +86,4 @@ gulp.task('watch', function() {
 livereload.listen();
 
 gulp.task('default', ['connect', 'watch']);
-//gulp.task('default', ['watch']);
+gulp.task('default', ['watch']);
