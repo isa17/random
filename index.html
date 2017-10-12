@@ -74,19 +74,21 @@
 			loop = 0,
 			list = document.getElementById('list'),
 			countNames,
-			random = 0;
+			random = 0,
+			names;
 
 		var play = function() {
+			shuffleDomList();
 			disableButton();
 			congratulationsFadeOut();
 			randomizeSong();
 			currentSong.play();
-			countNames = list.getElementsByTagName('li').length,
+			countNames = list.getElementsByTagName('li').length;
 			list.className = 'selecting';
-			count = 0,
-			loop = 0,
+			count = 0;
+			loop = 0;
 			random = Math.floor(Math.random() * countNames);
-			sort();
+			shuffle();
 		};
 
 		var randomizeSong = function() {
@@ -117,32 +119,62 @@
     		$("#play").prop("disabled",false);
 		}
 
-		var sort = function() {
-			//console.log(count)
+		var shuffleArray = function(array) {
+		    for (var i = array.length - 1; i > 0; i--) {
+		        var j = Math.floor(Math.random() * (i + 1));
+		        var temp = array[i];
+		        array[i] = array[j];
+		        array[j] = temp;
+		    }
+		    return array;
+		}
+
+		var putListInDom = function(names) {
+			var html = '';
+			for (var i in names) {
+				if (names[i].charAt(0) == '#') {
+					html += '<li class="none"><span>' + names[i].substr(1) + '</span></li>';
+				} else {
+					html += '<li><span>' + names[i] + '</span></li>';
+				}
+			}
+			var el = document.getElementById('list');
+			el.innerHTML = html;
+		}
+
+		var clearDomList = function() {
+			let domList = $('#list');
+			domList.empty();
+		}
+
+		var shuffleDomList = function() {
+			clearDomList();
+			names = shuffleArray(names);
+			putListInDom(names);
+		}
+
+		var shuffle = function() {
 			if (count >= 0) {
 				var el = list.style.top = -(count * 240) + 'px';
-			//console.log("entrei1")
 			}
 
 			count++;
 
 			//executa so no final
-			if ( count > 0 && count >= (countNames/2)) {
-				//console.log("entrei2")
+			//dividido por 3 para ser mais rápido com uma lista de 1500 pessoas
+			if ( count > 0 && count >= (countNames/3)) {
 				loop++;
 				count = 0;
 			}
 
 			//executa so no final
 			if (loop >= 1) {
-				//console.log("entrei3")
 				var el = list.style.top = -(random * 240) + 'px';
 				musicFadeOut();
 				congratulationsFadeIn();
 				enableButton();
 			} else {
-				//console.log("entrei4")
-				setTimeout(sort, 20);
+				setTimeout(shuffle, 20);
 			}
 		}
 
@@ -155,17 +187,8 @@
 
 			reader.onload = (function(theFile) {
 				return function(e) {
-					var names = e.target.result.split('\n');
-					var html = '';
-					for (var i in names) {
-						if (names[i].charAt(0) == '#') {
-							html += '<li class="none"><span>' + names[i].substr(1) + '</span></li>';
-						} else {
-							html += '<li><span>' + names[i] + '</span></li>';
-						}
-					}
-					var el = document.getElementById('list');
-					el.innerHTML = html;
+					names = e.target.result.split('\n');
+					putListInDom(names);
 				};
 			})(file[0]);
 	      	reader.readAsText(file[0]);
